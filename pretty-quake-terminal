@@ -5,7 +5,9 @@
 #
 terminals=$(ps aux | grep gnome-terminal-server | wc -l)
 if [ $terminals = 1 ]; then
-    gnome-terminal && wmctrl -a metju && wmctrl -r metju -b add,maximized_vert,maximized_horz
+    gnome-terminal
+    wmctrl -R metju
+    wmctrl -r metju -b add,maximized_vert,maximized_horz
 fi
 
 #
@@ -22,7 +24,7 @@ active_window_id=`xdotool getactivewindow`
 if [ $(( active_window_id == terminal_window_id )) = 1 ]; then
     xdotool windowminimize $terminal_window_id
 else
-    wmctrl -a metju
+    wmctrl -R metju
 fi
 
 # 
