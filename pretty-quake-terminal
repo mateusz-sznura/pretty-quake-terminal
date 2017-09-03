@@ -7,69 +7,64 @@ LAST_ACTIVE_WIN_ID_FILE=/tmp/.pretty-quake-terminal-last-active-win-id
 LOG_FILE=/tmp/.pretty-quake-terminal-log
 LOCK_FILE=/tmp/.pretty-quake-terminal-lock
 
-#
-# If script is already running, exit.
-#
-if [ -f $LOCK_FILE ]
-then
-    echo found lock file, exiting >> $LOG_FILE
-    echo ------------------------------------------------------------- >> $LOG_FILE
-    exit
-fi
-touch $LOCK_FILE
+main() {
+    #
+    # Find current active window id
+    #
+    active_win_id=`xdotool getactivewindow`
 
-#
-# Find current active window id
-#
-active_win_id=`xdotool getactivewindow`
-
-#
-# Open gnome-terminal if one is not already open
-#
-terminals=$(ps aux | grep gnome-terminal-server | wc -l)
-if [ $terminals = 1 ]
-then
-    gnome-terminal
-fi
-
-#
-# Find terminal window id (wait until window is ready), then convert it from
-# hex to dec and save in var
-#
-terminal_pid=`pgrep gnome-terminal`
-terminal_win_id=0
-while [ $terminal_win_id -eq 0 ]
-do
-    set `wmctrl -lp | grep $terminal_pid`
-    terminal_win_id=$(echo $(($1)))
-done
-
-# 
-# Maximize terminal window (finally works due to waiting til window is ready)
-#
-# wmctrl -i -R $terminal_win_id -b add,maximized_vert,maximized_horz
-
-echo terminal win id: $terminal_win_id active win id: $active_win_id >> $LOG_FILE
-
-#
-# Switch between terminal and last active window
-#
-if [ $active_win_id -eq $terminal_win_id ]
-then
-    if [ -s $LAST_ACTIVE_WIN_ID_FILE ]
+    #
+    # Open gnome-terminal if one is not already open
+    #
+    terminals=$(ps aux | grep gnome-terminal-server | wc -l)
+    if [ $terminals = 1 ]
     then
-        wmctrl -i -a $(cat $LAST_ACTIVE_WIN_ID_FILE)
-    else
-        xdotool windowminimize $terminal_win_id
+        gnome-terminal
     fi
-else
-    echo $active_win_id > $LAST_ACTIVE_WIN_ID_FILE
-    wmctrl -i -R $terminal_win_id
-fi
 
-echo ------------------------------------------------------------- >> $LOG_FILE
+    #
+    # Find terminal window id (wait until window is ready), then convert it
+    # from hex to dec and save in var
+    #
+    terminal_pid=`pgrep gnome-terminal`
+    terminal_win_id=0
+    while [ $terminal_win_id -eq 0 ]
+    do
+        set `wmctrl -lp | grep $terminal_pid`
+        terminal_win_id=$(echo $(($1)))
+    done
 
-rm $LOCK_FILE
+    #
+    # Maximize terminal window (finally works due to waiting til window is
+    # ready)
+    #
+    # wmctrl -i -R $terminal_win_id -b add,maximized_vert,maximized_horz
+
+    echo terminal win id: $terminal_win_id active win id: $active_win_id >> $LOG_FILE
+
+    #
+    # Switch between terminal and last active window
+    #
+    if [ $active_win_id -eq $terminal_win_id ]
+    then
+        if [ -s $LAST_ACTIVE_WIN_ID_FILE ]
+        then
+            wmctrl -i -a $(cat $LAST_ACTIVE_WIN_ID_FILE)
+        else
+            xdotool windowminimize $terminal_win_id
+        fi
+    else
+        echo $active_win_id > $LAST_ACTIVE_WIN_ID_FILE
+        wmctrl -i -R $terminal_win_id
+    fi
+
+    echo --------------------------------------------------------- >> $LOG_FILE
+}
+
+(
+    flock -n 200
+    main
+) 200> $LOCK_FILE
 
 # 
 # For quick reference
