@@ -3,15 +3,16 @@
 #
 # Consts
 #
-LAST_ACTIVE_WIN_ID_FILE=/tmp/.pretty-gnome-terminal-last-active-win-id
+LAST_ACTIVE_WIN_ID_FILE=/tmp/.pretty-quake-terminal-last-active-win-id
+LOG_FILE=/tmp/.pretty-quake-terminal-log
 
 #
 # Open gnome-terminal if one is not already open
 #
 terminals=$(ps aux | grep gnome-terminal-server | wc -l)
-if [ $terminals = 1 ]; then
+if [ $terminals = 1 ]
+then
     gnome-terminal
-    wmctrl -R metju
 fi
 
 #
@@ -23,9 +24,12 @@ set `wmctrl -lp | grep $terminal_pid`
 terminal_win_id=$(echo $(($1)))
 
 #
-# Toggle terminal state between active and minimized 
+# Switch between terminal and last active window
 # 
 active_win_id=`xdotool getactivewindow`
+
+echo terminal win id: $terminal_win_id active win id: $active_win_id >> $LOG_FILE
+
 if [ $active_win_id -eq $terminal_win_id ]
 then
     if [ -s $LAST_ACTIVE_WIN_ID_FILE ]
@@ -38,6 +42,9 @@ else
     echo $active_win_id > $LAST_ACTIVE_WIN_ID_FILE
     wmctrl -R metju
 fi
+
+
+echo ------------------------------------------------------------- >> $LOG_FILE
 
 # 
 # For quick reference
