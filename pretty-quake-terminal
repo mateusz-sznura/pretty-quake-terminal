@@ -5,6 +5,18 @@
 #
 LAST_ACTIVE_WIN_ID_FILE=/tmp/.pretty-quake-terminal-last-active-win-id
 LOG_FILE=/tmp/.pretty-quake-terminal-log
+LOCK_FILE=/tmp/.pretty-quake-terminal-lock
+
+#
+# If script is already running, exit.
+#
+if [ -f $LOCK_FILE ]
+then
+    echo found lock file, exiting >> $LOG_FILE
+    echo ------------------------------------------------------------- >> $LOG_FILE
+    exit
+fi
+touch $LOCK_FILE
 
 #
 # Find current active window id
@@ -55,8 +67,9 @@ else
     wmctrl -i -R $terminal_win_id
 fi
 
-
 echo ------------------------------------------------------------- >> $LOG_FILE
+
+rm $LOCK_FILE
 
 # 
 # For quick reference
