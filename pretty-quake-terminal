@@ -1,0 +1,35 @@
+#!/bin/bash
+
+terminals=$(ps aux | grep gnome-terminal-server | wc -l)
+if [ $terminals = 1 ]; then
+    gnome-terminal && wmctrl -a metju && wmctrl -r metju -b add,maximized_vert,maximized_horz
+fi
+
+terminal_pid=`pgrep gnome-terminal`
+set `wmctrl -lp | grep $terminal_pid`
+terminal_window_id=$1
+
+if [ -f /tmp/.pretty-quake-terminal ]; then
+    echo exists
+    # wmctrl -r metju -b remove,shaded
+    # wmctrl -r metju -b remove,below
+    active_window_id=`xdotool getactivewindow`
+    if [ $(( active_window_id == terminal_window_id )) = 1 ]; then
+        xdotool windowminimize $terminal_window_id
+    else
+        wmctrl -a metju
+    fi
+    # wmctrl -a metju
+    rm /tmp/.pretty-quake-terminal
+else
+    echo does not exist
+    # wmctrl -r metju -b add,shaded
+    # wmctrl -r metju -b add,below
+    active_window_id=`xdotool getactivewindow`
+    if [ $(( active_window_id == terminal_window_id )) = 1 ]; then
+        xdotool windowminimize $terminal_window_id
+    else
+        wmctrl -a metju
+    fi
+    touch /tmp/.pretty-quake-terminal
+fi
