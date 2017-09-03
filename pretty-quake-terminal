@@ -40,7 +40,7 @@ then
     fi
 else
     echo $active_win_id > $LAST_ACTIVE_WIN_ID_FILE
-    wmctrl -R metju
+    wmctrl -i -R $terminal_win_id
 fi
 
 
