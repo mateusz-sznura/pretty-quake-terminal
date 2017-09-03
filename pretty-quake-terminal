@@ -1,35 +1,34 @@
 #!/bin/bash
 
+#
+# Open gnome-terminal if one is not already open
+#
 terminals=$(ps aux | grep gnome-terminal-server | wc -l)
 if [ $terminals = 1 ]; then
     gnome-terminal && wmctrl -a metju && wmctrl -r metju -b add,maximized_vert,maximized_horz
 fi
 
+#
+# Find and save terminal window id
+#
 terminal_pid=`pgrep gnome-terminal`
 set `wmctrl -lp | grep $terminal_pid`
 terminal_window_id=$1
 
-if [ -f /tmp/.pretty-quake-terminal ]; then
-    echo exists
-    # wmctrl -r metju -b remove,shaded
-    # wmctrl -r metju -b remove,below
-    active_window_id=`xdotool getactivewindow`
-    if [ $(( active_window_id == terminal_window_id )) = 1 ]; then
-        xdotool windowminimize $terminal_window_id
-    else
-        wmctrl -a metju
-    fi
-    # wmctrl -a metju
-    rm /tmp/.pretty-quake-terminal
+#
+# Toggle terminal state between active and minimized 
+# 
+active_window_id=`xdotool getactivewindow`
+if [ $(( active_window_id == terminal_window_id )) = 1 ]; then
+    xdotool windowminimize $terminal_window_id
 else
-    echo does not exist
-    # wmctrl -r metju -b add,shaded
-    # wmctrl -r metju -b add,below
-    active_window_id=`xdotool getactivewindow`
-    if [ $(( active_window_id == terminal_window_id )) = 1 ]; then
-        xdotool windowminimize $terminal_window_id
-    else
-        wmctrl -a metju
-    fi
-    touch /tmp/.pretty-quake-terminal
+    wmctrl -a metju
 fi
+
+# 
+# For quick reference
+# 
+# wmctrl -r metju -b remove,shaded
+# wmctrl -r metju -b remove,below
+# wmctrl -r metju -b add,shaded
+# wmctrl -r metju -b add,below
