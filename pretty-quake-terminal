@@ -54,7 +54,7 @@ main() {
     then
         if [ -s $LAST_ACTIVE_WIN_ID_FILE ]
         then
-            wmctrl -i -a $(cat $LAST_ACTIVE_WIN_ID_FILE)
+            wmctrl -i -a $( cat $LAST_ACTIVE_WIN_ID_FILE )
         else
             xdotool windowminimize $terminal_win_id
         fi
