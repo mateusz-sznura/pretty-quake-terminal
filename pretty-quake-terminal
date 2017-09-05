@@ -11,12 +11,12 @@ main() {
     #
     # Find current active window id
     #
-    active_win_id=`xdotool getactivewindow`
+    active_win_id=$( xdotool getactivewindow )
 
     #
     # Open gnome-terminal if one is not already open
     #
-    terminals=$(ps aux | grep gnome-terminal-server | wc -l)
+    terminals=$( ps aux | grep gnome-terminal-server | wc -l )
     if [ $terminals = 1 ]
     then
         gnome-terminal
@@ -26,12 +26,17 @@ main() {
     # Find terminal window id (wait until window is ready), then convert it
     # from hex to dec and save in var
     #
-    terminal_pid=`pgrep gnome-terminal`
     terminal_win_id=0
     while [ $terminal_win_id -eq 0 ]
     do
-        set `wmctrl -lp | grep $terminal_pid`
-        terminal_win_id=$(echo $(($1)))
+        terminal_pid=$( pgrep gnome-terminal )
+        terminal_win_id=$( wmctrl -lp | grep $terminal_pid | cut -d ' ' -f1 )
+        if [ -z "$terminal_win_id" ]
+        then
+            terminal_win_id=0
+        else
+            terminal_win_id=$(( $terminal_win_id ))
+        fi
     done
 
     #
@@ -62,7 +67,7 @@ main() {
 }
 
 (
-    flock -n 200
+    flock -n 200 || exit
     main
 ) 200> $LOCK_FILE
 
