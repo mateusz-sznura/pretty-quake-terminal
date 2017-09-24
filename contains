@@ -1,0 +1,23 @@
+#!/bin/bash
+
+contains() {
+    local elem=$1
+
+    while [ -n "$2" ]
+    do
+        echo "checking $2"
+        if [ "$elem" = "$2" ]
+        then
+            return 0
+        fi
+        shift
+    done
+    return 1
+}
+
+if contains 5 1 2 3 4 5 6 7
+then
+    echo yay
+else
+    echo nay
+fi
