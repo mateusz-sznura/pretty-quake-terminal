@@ -22,9 +22,9 @@ main() {
         gnome-terminal
         if [ $? -eq 0 ] # or in one line: if gnome-terminal
         then
-            echo "INFO: gnome-terminal opened successfully." >> $LOG_FILE
+            echo "$(date) :INFO: gnome-terminal opened successfully." >> $LOG_FILE
         else
-            echo "ERROR: gnome-terminal didn't open!" >> $LOG_FILE
+            echo "$(date) :ERROR: gnome-terminal didn't open!" >> $LOG_FILE
         fi
     fi
 
@@ -38,7 +38,7 @@ main() {
         terminal_pid=$( pgrep gnome-terminal )
         if [ $? -ne 0 ]
         then
-            echo "ERROR: gnome-terminal not found!" # should exit gracefully or try to launch new one now
+            echo "$(date) :ERROR: gnome-terminal not found!" # should exit gracefully or try to launch new one now
         fi
         terminal_win_id=$( wmctrl -lp | grep $terminal_pid | cut -d ' ' -f1 )
         if [ -z "$terminal_win_id" ]
@@ -55,7 +55,7 @@ main() {
     #
     # wmctrl -i -R $terminal_win_id -b add,maximized_vert,maximized_horz
 
-    echo "INFO: terminal win id: $terminal_win_id, active win id: $active_win_id" >> $LOG_FILE
+    echo "$(date) :INFO: terminal win id: $terminal_win_id, active win id: $active_win_id" >> $LOG_FILE
 
     #
     # Switch between terminal and last active window
