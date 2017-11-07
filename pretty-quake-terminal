@@ -8,6 +8,7 @@ LOG_FILE=/tmp/.pretty-quake-terminal-log
 LOCK_FILE=/tmp/.pretty-quake-terminal-lock
 
 main() {
+    echo "$(date) :DEBUG: executing main." >> $LOG_FILE
     #
     # Find current active window id
     #
@@ -77,6 +78,7 @@ main() {
 }
 
 (
+    echo "$(date) :DEBUG: acquiring lock." >> $LOG_FILE
     flock -n 200 || exit
     main
 ) 200> $LOCK_FILE
